@@ -5,6 +5,7 @@
 @import "animate"
 @import "variables"
 @import "bootstrap"
+@import "loader"
 
 @import "bootstrap/theme"
 
@@ -35,6 +36,7 @@ html, body, #map
   background-color: $brand-success
 
 .legend
+  margin-top: 10px
   width: 400px
   height: 30px
 
@@ -43,3 +45,9 @@ html, body, #map
     height: 15px
     display: inline-block
     background-color: #bbb
+
+select[multiple]
+  height: 200px !important
+
+  &[name="dataset_id[]"]
+    height: 100px !important

@@ -1,5 +1,4 @@
-<div class="um-options-set col-xs-2 animated fadeInLeftBig">
-
+<div id="options" class="um-options-set col-xs-2 hide">
   <h1 class="page-title">UMBER</h1>
   <!-- <p class="lead">There's something going on umber here.</p> -->
   <!-- <%= image_tag('umberlogo.png') %> -->
@@ -12,9 +11,7 @@
       <span class="colorswatch min"></span>
       <span class="value min"></span>
 
-      <% (1..10).each do |i| %>
-        <span class="colorswatch step-#{i}"></span>
-      <% end %>
+      <br/>
 
       <span class="colorswatch max"></span>
       <span class="value max"></span>
@@ -31,17 +28,23 @@
   <div class="um-option">
     <p>Choose a year:</p>
     <%= select_tag :years, options_for_select(
-      (1948...2014).map{ |year| [year, year] }
+      2014.downto(1948).map{ |year| [year, year] }
     ), multiple: true %>
-</div>
+  </div>
 
-  <div class="um-option">
+  <div id="times" class="um-option hide">
     <p>Time:</p>
     <%= select_tag :times, options_for_select([]), multiple: true %>
   </div>
 </div> <!-- /um-options-set -->
 
 <div id="map"></div>
+
+<div id="circleG">
+  <div id="circleG_1" class="circleG"></div>
+  <div id="circleG_2" class="circleG"></div>
+  <div id="circleG_3" class="circleG"></div>
+</div>
 
 <% content_for :dom_ready do %>
   navigator.geolocation.getCurrentPosition(function(position) {

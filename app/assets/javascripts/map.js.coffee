@@ -1,5 +1,6 @@
 class Map
-  @baseUrl: "http://10.0.0.2:5000"
+  baseUrl: "http://10.0.0.2"
+  port: "5001"
 
   constructor: ->
     @drawMap()
@@ -15,17 +16,23 @@ class Map
     @setDataSets()
 
   setDataSets: =>
-    $.getJSON "http://10.0.0.2:5000/datasets", (data) =>
+    $.getJSON "#{@baseUrl}:#{@port}/datasets", (data) =>
       $.each data.datasets, (i, e) =>
         @$dataset.append($("<option/>").attr("value", e.slug).text(e.name))
+        $("#options").addClass("animated fadeInLeftBig").removeClass("hide")
 
   getTimes: =>
+    @$times.empty()
+    $("#times").addClass("fadeOutLeftBig").removeClass("fadeInLeftBig")
+
     slug = @$dataset.val()
     year = @$years.val()
-    $.getJSON "http://10.0.0.2:5000/dataset/#{year}/#{slug}", (data) =>
-      @$times.empty()
+
+    $.getJSON "#{@baseUrl}:#{@port}/dataset/#{year}/#{slug}", (data) =>
       $.each data.times, (i, e) =>
         @$times.append($("<option/>").attr("value", e.time).text(e.time_as_string))
+
+      $("#times").addClass("animated fadeInLeftBig").removeClass("hide fadeOutLeftBig")
 
   getPoints: =>
     dataset_id = @$dataset.val()
@@ -35,12 +42,16 @@ class Map
     latitude  = window.coordinates[0]
     longitude = window.coordinates[1]
 
-    $.getJSON "http://10.0.0.2:5000/dataset/#{year}/#{dataset_id}?lat=#{latitude}&lng=#{longitude}&time=#{time}&delta_lat=7&delta_lng=10", (data) =>
+    delta_lat = 10
+    delta_lng = 30
+
+    $.getJSON "#{@baseUrl}:#{@port}/dataset/#{year}/#{dataset_id}?lat=#{latitude}&lng=#{longitude}&time=#{time}&delta_lat=#{delta_lat}&delta_lng=#{delta_lng}", (data) =>
       @drawGeoJSON(data)
       @fillLegend(data)
 
   drawMap: (data) ->
-    @map = L.map('map').setView(window.coordinates, 4)
+    @map = L.map('map', zoomControl: false).setView(window.coordinates, 5)
+    new L.Control.Zoom({ position: 'topright' }).addTo(@map)
 
     L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
@@ -89,7 +100,7 @@ class Map
         opacity: 1
 
       L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
-      L.circle([e.lat, e.lng], 200000, options).addTo(@layerGroup)
+      L.circle([e.lat, e.lng], 150000, options).addTo(@layerGroup)
 
   fillLegend: (data) =>
     min = data.headers.actual_range[0]
@@ -110,9 +121,5 @@ class Map
 
     $(".min.value").text(min + " #{data.headers.units}")
     $(".max.value").text(max + " #{data.headers.units}")
-
-    for i in [1...100] by 10
-      color = getColorAtScalar(range / 100 * i)
-      $(".colorswatch.ste-#{i}").css("background-color": color)
 
 window.Map = Map
