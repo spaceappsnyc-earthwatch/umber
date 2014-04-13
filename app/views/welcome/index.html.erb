@@ -1,9 +1,16 @@
 <div class="container">
   <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
   <%= select_tag :years, options_for_select(
-    (1948...2014).map{ |year| [year, year] }
+    (1948..2014).map{ |year| [year, year] }
   ), multiple: true %>
   <%= select_tag :times, options_for_select([]), multiple: true %>
+
+  <div class="legend">
+    <span class="colorswatch min"></span>
+    <span class="value min"></span>
+    <span class="colorswatch max"></span>
+    <span class="value max"></span>
+  </div>
 </div>
 
 <div class="container">
