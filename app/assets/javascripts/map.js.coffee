@@ -42,11 +42,9 @@ class Map
   drawMap: (data) ->
     @map = L.map('map').setView(window.coordinates, 4)
 
-    L.tileLayer(
-      'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-        maxZoom: 20
-      }
+    L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
+      maxZoom: 20
     ).addTo(@map)
 
     @marker = L.marker(window.coordinates).addTo(@map)
@@ -91,14 +89,14 @@ class Map
         opacity: 1
 
       L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
-      L.circle([e.lat, e.lng], 100000, options).addTo(@layerGroup)
+      L.circle([e.lat, e.lng], 200000, options).addTo(@layerGroup)
 
   fillLegend: (data) =>
     min = data.headers.actual_range[0]
     max = data.headers.actual_range[1]
+    range = max - min
 
     scale = (value) ->
-      range = max - min
       parseFloat(value - min) #/ range
 
     getColorAtScalar = (n) ->
@@ -112,5 +110,9 @@ class Map
 
     $(".min.value").text(min + " #{data.headers.units}")
     $(".max.value").text(max + " #{data.headers.units}")
+
+    for i in [1...100] by 10
+      color = getColorAtScalar(range / 100 * i)
+      $(".colorswatch.ste-#{i}").css("background-color": color)
 
 window.Map = Map
