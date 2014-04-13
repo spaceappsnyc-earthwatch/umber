@@ -91,14 +91,14 @@ class Map
         opacity: 1
 
       L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
-      L.circle([e.lat, e.lng], 100000, options).addTo(@layerGroup)
+      L.circle([e.lat, e.lng], 200000, options).addTo(@layerGroup)
 
   fillLegend: (data) =>
     min = data.headers.actual_range[0]
     max = data.headers.actual_range[1]
+    range = max - min
 
     scale = (value) ->
-      range = max - min
       parseFloat(value - min) #/ range
 
     getColorAtScalar = (n) ->
@@ -112,5 +112,11 @@ class Map
 
     $(".min.value").text(min + " #{data.headers.units}")
     $(".max.value").text(max + " #{data.headers.units}")
+
+    debugger
+
+    for i in [1...100] by 10
+      color = getColorAtScalar(range / 100 * i)
+      $(".colorswatch.ste-#{i}").css("background-color": color)
 
 window.Map = Map
