@@ -1,5 +1,20 @@
-Hello, world
+<div class="container">
+  <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
+  <%= select_tag :years, options_for_select(
+    (1948...2014).map{ |year| [year, year] }
+  ), multiple: true %>
+  <%= select_tag :times, options_for_select([]), multiple: true %>
+</div>
+
+<div class="container">
+  <div id="map"></div>
+</div>
 
 <% content_for :dom_ready do %>
-  new Map();
+  navigator.geolocation.getCurrentPosition(function(position) {
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    window.coordinates = [latitude, longitude];
+    new Map();
+  });
 <% end %>

@@ -53,4 +53,12 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  resources :datasets do
+    resources :points do
+      collection do
+        get :times
+      end
+    end
+  end
 end
