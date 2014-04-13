@@ -17,29 +17,34 @@ class Map
 
     geocoder = new google.maps.Geocoder()
 
-    googleGeocoding = (text, callResponse) ->
-      geocoder.geocode({address: text}, callResponse)
+    googleGeocoding = (text, callResponse) -> geocoder.geocode({address: text}, callResponse)
 
-    filterJSONCall = (rawjson) ->
+    filterJSONCall = (rawjson) =>
       json = {}
       disp = []
 
       $.each rawjson, (i, raw) ->
         key = raw.formatted_address
         loc = L.latLng(raw.geometry.location.lat(), raw.geometry.location.lng())
-        json[ key ]= loc
+        json[key] = loc
 
-      return json
+      json
 
-    @map.addControl(new L.Control.Search({
-        callData: googleGeocoding,
-        filterJSON: filterJSONCall,
-        markerLocation: true,
-        autoType: false,
-        autoCollapse: true,
-        minLength: 2,
-        zoom: 10
-      }))
+    @search = new L.Control.Search
+      callData: googleGeocoding
+      filterJSON: filterJSONCall
+      markerLocation: false
+      circleLocation: false
+      autoType: false
+      autoCollapse: true
+      minLength: 2
+      zoom: 5
+
+    @map.addControl(@search)
+
+    @search.on 'search_locationfound', (location, title) =>
+      @marker.setLatLng(location.latlng)
+      window.coordinates = [location.latlng.lat, location.latlng.lng]
 
   setDataSets: =>
     $.getJSON "#{@baseUrl}:#{@port}/datasets", (data) =>
@@ -68,15 +73,15 @@ class Map
     latitude  = window.coordinates[0]
     longitude = window.coordinates[1]
 
-    delta_lat = 10
-    delta_lng = 30
+    delta_lat = 8
+    delta_lng = 16
 
     $.getJSON "#{@baseUrl}:#{@port}/dataset/#{year}/#{dataset_id}?lat=#{latitude}&lng=#{longitude}&time=#{time}&delta_lat=#{delta_lat}&delta_lng=#{delta_lng}", (data) =>
       @drawGeoJSON(data)
       @fillLegend(data)
 
   drawMap: (data) ->
-    @map = L.map('map', zoomControl: false).setView(window.coordinates, 5)
+    @map = L.map('map', zoomControl: false).setView(window.coordinates, 7)
     new L.Control.Zoom({ position: 'topright' }).addTo(@map)
 
     L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
