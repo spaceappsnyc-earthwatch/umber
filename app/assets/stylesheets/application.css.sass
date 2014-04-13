@@ -10,9 +10,17 @@
 
 html, body, #map
   height: 100%
+  font-family: 'Montserrat', sans-serif
 
 #map
   width: 100%
+
+.logo
+  position: fixed
+  bottom: 0
+  right: 0
+  z-index: 4
+  pointer-events: none
 
 .um-options-set
   position: fixed
@@ -23,8 +31,8 @@ html, body, #map
 .um-option 
   padding: $padding-large-vertical*2
   margin-bottom: $padding-large-vertical*2
-  background: $brand-primary
-  box-shadow: 1px 1px 0 lighten($brand-primary, 15%), 2px 2px 0 lighten($brand-primary, 5%), 3px 3px 0 darken($brand-primary, 15%), 4px 4px 0 darken($brand-primary, 20%), 5px 5px 0 darken($brand-primary, 25%), 6px 6px 0 darken($brand-primary, 30%)
+  // background: $brand-primary
+  // box-shadow: 1px 1px 0 lighten($brand-primary, 15%), 2px 2px 0 lighten($brand-primary, 5%), 3px 3px 0 darken($brand-primary, 15%), 4px 4px 0 darken($brand-primary, 20%), 5px 5px 0 darken($brand-primary, 25%), 6px 6px 0 darken($brand-primary, 30%)
 
   select 
     width: 100%
