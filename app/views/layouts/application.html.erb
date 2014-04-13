@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Visualizer</title>
+  <title>UMBER</title>
   <%#= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= stylesheet_link_tag 'application', media: 'all'  %>
   <%= javascript_include_tag 'application' %>
@@ -9,9 +9,8 @@
 </head>
 
 <body>
-  <div class="container">
-    <%= yield %>
-  </div>
+  
+  <%= yield %>
 
   <% if content_for? :dom_ready %>
     <script>

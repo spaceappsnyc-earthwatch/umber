@@ -40,11 +40,9 @@ class Map
   drawMap: (data) ->
     #@map = L.map('map').setView([window.coordinates[0], window.coordinates[1]], 13)
     @map = L.map('map').setView(window.coordinates, 6)
-    L.tileLayer(
-      #'http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-        maxZoom: 20
+    L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
+      maxZoom: 20
       }
     ).addTo(@map)
 

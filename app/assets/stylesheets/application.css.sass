@@ -2,8 +2,34 @@
 //= require_self
 //= require leaflet
 
+@import "animate"
+@import "variables"
 @import "bootstrap"
+
 @import "bootstrap/theme"
 
+html, body, #map
+  height: 100%
+
 #map
-  height: 800px
+  width: 100%
+
+.um-options-set
+  position: fixed
+  left: 0
+  top: 0
+  z-index: 2
+
+.um-option 
+  padding: $padding-large-vertical*2
+  margin-bottom: $padding-large-vertical*2
+  background: $brand-primary
+  box-shadow: 1px 1px 1px darken($brand-primary, 5%), 2px 2px 2px darken($brand-primary, 20%), 5px 5px 0 darken($brand-primary, 20%)
+
+  select 
+    width: 100%
+
+.um-legend-unit-color
+  height: 40px
+  width: 40px
+  background-color: $brand-success

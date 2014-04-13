@@ -1,20 +1,37 @@
-<div class="container">
-  <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
-  <%= select_tag :years, options_for_select(
-    (1948...2014).map{ |year| [year, year] }
-  ), multiple: true %>
-  <%= select_tag :times, options_for_select([]), multiple: true %>
-</div>
+<div class="um-options-set col-xs-2 animated fadeInRightBig">  
+  
+  <h1 class="page-title">UMBER</h1>
+  <!-- <p class="lead">There's something going on umber here.</p> -->
+  <!-- <%= image_tag('umberlogo.png') %> -->
 
-<div class="container">
-  <div id="map"></div>
-</div>
+  <div class="um-option">
+    <p>Dataset:</p>
+    <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
+    <div class="um-legend">
+      <p class="um-legend-unit">In Pascals</p>
+      <div class="um-legend-unit-color"></div>
+    </div>
+  </div>
+  <div class="um-option">
+    <p>Choose a year:</p>
+    <%= select_tag :years, options_for_select(
+      (1948...2014).map{ |year| [year, year] }
+    ), multiple: true %>
+  </div>
+  <div class="um-option">
+    <p>Time:</p>
+    <%= select_tag :times, options_for_select([]), multiple: true %>  
+  </div>
 
-<% content_for :dom_ready do %>
-  navigator.geolocation.getCurrentPosition(function(position) {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-    window.coordinates = [latitude, longitude];
-    new Map();
-  });
-<% end %>
+  <% content_for :dom_ready do %>
+    navigator.geolocation.getCurrentPosition(function(position) {
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+      window.coordinates = [latitude, longitude];
+      new Map();
+    });
+  <% end %>
+
+</div> <!-- /um-options-set -->
+
+<div id="map"></div>
