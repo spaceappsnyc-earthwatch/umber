@@ -1,23 +1,21 @@
-<div class="um-options-set col-xs-2 animated fadeInLeftBig">
-
-  <h1 class="page-title">UMBER</h1>
+<div id="options" class="um-options-set col-xs-2">
+  <%= image_tag('umberlogo.png', class: 'logo') %>
   <!-- <p class="lead">There's something going on umber here.</p> -->
 
   <div class="um-option">
-    <p>Dataset:</p>
+    <p class="um-opt-title">Dataset</p>
     <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
 
     <div class="legend">
       <span class="colorswatch min"></span>
       <span class="value min"></span>
 
-      <% (1..10).each do |i| %>
-        <span class="colorswatch step-#{i}"></span>
-      <% end %>
+      <br/>
 
       <span class="colorswatch max"></span>
       <span class="value max"></span>
     </div>
+
 <!--
     <div class="um-legend">
       <p class="um-legend-unit">In Pascals</p>
@@ -28,21 +26,25 @@
   </div>
 
   <div class="um-option">
-    <p>Choose a year:</p>
+    <p class="um-opt-title">Year</p>
     <%= select_tag :years, options_for_select(
-      (1948...2014).map{ |year| [year, year] }
+      2014.downto(1948).map{ |year| [year, year] }
     ), multiple: true %>
-</div>
+  </div>
 
-  <div class="um-option">
-    <p>Time:</p>
+  <div id="times" class="um-option hide">
+    <p class="um-opt-title">Time</p>
     <%= select_tag :times, options_for_select([]), multiple: true %>
   </div>
 </div> <!-- /um-options-set -->
 
 <div id="map"></div>
 
-<%= image_tag('umberlogo.png', class: 'logo') %>
+<div id="circleG">
+  <div id="circleG_1" class="circleG"></div>
+  <div id="circleG_2" class="circleG"></div>
+  <div id="circleG_3" class="circleG"></div>
+</div>
 
 <% content_for :dom_ready do %>
   navigator.geolocation.getCurrentPosition(function(position) {

@@ -5,6 +5,7 @@
 @import "animate"
 @import "variables"
 @import "bootstrap"
+@import "loader"
 
 @import "bootstrap/theme"
 
@@ -16,24 +17,30 @@ html, body, #map
   width: 100%
 
 .logo
-  position: fixed
-  bottom: 0
-  right: 0
-  z-index: 4
-  pointer-events: none
+  width: 100%
+  margin: 20px 0
+
+.um-opt-title
+  text-transform: uppercase
+  font-weight: bold
+  letter-spacing: 2px
 
 .um-options-set
   position: fixed
-  left: 0
-  top: 0
+  left: 10px
+  top: 10px
   z-index: 2
 
 .um-option
   padding: $padding-large-vertical*2
   margin-bottom: $padding-large-vertical*2
-  // background: $brand-primary
-  // box-shadow: 1px 1px 0 lighten($brand-primary, 15%), 2px 2px 0 lighten($brand-primary, 5%), 3px 3px 0 darken($brand-primary, 15%), 4px 4px 0 darken($brand-primary, 20%), 5px 5px 0 darken($brand-primary, 25%), 6px 6px 0 darken($brand-primary, 30%)
+  background-color: rgba(255,255,255,0.8)
+  // box-shadow: 1px 1px 0 darken($brand-primary, 8%), 2px 2px 0 lighten($brand-primary, 5%), 2px 2px 0 lighten($brand-primary, 5%), 3px 3px 0 darken($brand-primary, 15%), 4px 4px 0 darken($brand-primary, 20%), 5px 5px 0 darken($brand-primary, 25%), 6px 6px 0 darken($brand-primary, 30%)
+  border: 1px solid $brand-primary
+  box-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15)
 
+
+  
   select
     width: 100%
 
@@ -43,6 +50,7 @@ html, body, #map
   background-color: $brand-success
 
 .legend
+  margin-top: 10px
   width: 400px
   height: 30px
 
@@ -51,3 +59,9 @@ html, body, #map
     height: 15px
     display: inline-block
     background-color: #bbb
+
+select[multiple]
+  height: 100px !important
+
+  &[name="dataset_id[]"]
+    height: 100px !important
