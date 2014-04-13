@@ -15,6 +15,32 @@ class Map
 
     @setDataSets()
 
+    geocoder = new google.maps.Geocoder()
+
+    googleGeocoding = (text, callResponse) ->
+      geocoder.geocode({address: text}, callResponse)
+
+    filterJSONCall = (rawjson) ->
+      json = {}
+      disp = []
+
+      $.each rawjson, (i, raw) ->
+        key = raw.formatted_address
+        loc = L.latLng(raw.geometry.location.lat(), raw.geometry.location.lng())
+        json[ key ]= loc
+
+      return json
+
+    @map.addControl(new L.Control.Search({
+        callData: googleGeocoding,
+        filterJSON: filterJSONCall,
+        markerLocation: true,
+        autoType: false,
+        autoCollapse: true,
+        minLength: 2,
+        zoom: 10
+      }))
+
   setDataSets: =>
     $.getJSON "#{@baseUrl}:#{@port}/datasets", (data) =>
       $.each data.datasets, (i, e) =>

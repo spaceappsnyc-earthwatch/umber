@@ -4,6 +4,7 @@
 # require d3
 # require topojson.v1.min
 #= require leaflet
+#= require leaflet-search
 
 $ ->
   $(document).ajaxStart -> $("#circleG").show()
