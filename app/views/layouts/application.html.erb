@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Visualizer</title>
+  <%#= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag 'application', media: 'all'  %>
+  <%= javascript_include_tag 'application' %>
+  <%= csrf_meta_tags %>
+</head>
+
+<body>
+  <div class="container">
+    <%= yield %>
+  </div>
+
+  <% if content_for? :dom_ready %>
+    <script>
+      $(function() { <%= yield :dom_ready %> });
+    </script>
+  <% end %>
+</body>
+</html>
