@@ -8,6 +8,7 @@ class Map
     @$years = $("[name='years[]']")
     @$times = $("[name='times[]']")
 
+    @$dataset.on("change", @getTimes)
     @$years.on("change", @getTimes)
     @$times.on("change", @getPoints)
 
@@ -24,7 +25,7 @@ class Map
     $.getJSON "http://10.0.0.2:5000/dataset/#{year}/#{slug}", (data) =>
       @$times.empty()
       $.each data.times, (i, e) =>
-        @$times.append($("<option/>").attr("value", e).text(e))
+        @$times.append($("<option/>").attr("value", e.time).text(e.time_as_string))
 
   getPoints: =>
     dataset_id = @$dataset.val()
@@ -34,80 +35,82 @@ class Map
     latitude  = window.coordinates[0]
     longitude = window.coordinates[1]
 
-    $.getJSON "http://10.0.0.2:5000/dataset/#{dataset_id}/points?latitude=#{latitude}&longitude=#{longitude}&time=#{time}", (data) =>
+    $.getJSON "http://10.0.0.2:5000/dataset/#{year}/#{dataset_id}?lat=#{latitude}&lng=#{longitude}&time=#{time}&delta_lat=7&delta_lng=10", (data) =>
       @drawGeoJSON(data)
+      @fillLegend(data)
 
   drawMap: (data) ->
-    #@map = L.map('map').setView([window.coordinates[0], window.coordinates[1]], 13)
-    @map = L.map('map').setView(window.coordinates, 6)
-    L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
-      maxZoom: 20
+    @map = L.map('map').setView(window.coordinates, 4)
+
+    L.tileLayer(
+      'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 20
       }
     ).addTo(@map)
 
     @marker = L.marker(window.coordinates).addTo(@map)
+    @layerGroup = L.layerGroup([]).addTo(@map)
 
   polyForCoords: (e) ->
+    latitude = parseFloat(e.lat)
+    longitude = parseFloat(e.lng)
+
+    padding = 1.25
+
     [
-      [e.latitude + 1, e.longitude + 1]
-      [e.latitude + 1, e.longitude - 1]
-      [e.latitude - 1, e.longitude - 1]
-      [e.latitude - 1, e.longitude + 1]
+      [latitude + padding, longitude + padding]
+      [latitude + padding, longitude - padding]
+      [latitude - padding, longitude - padding]
+      [latitude - padding, longitude + padding]
     ]
 
   drawGeoJSON: (data) =>
-    # geoJSONFeature = {
-    #   type: "Feature"
-    #   geometry: {
-    #     type: "Point"
-    #     coordinates: [data[0].longitude, data[0].latitude]
-    #   }
-    # }
-    # L.geoJson(geoJSONFeature).addTo(@map)
+    @layerGroup.clearLayers()
+
+    min = data.headers.actual_range[0]
+    max = data.headers.actual_range[1]
 
     scale = (value) ->
-      range = data.max_value - data.min_value
-      value - data.min_value
+      range = max - min
+      parseFloat(value - min) #/ range
 
     onEachFeature = (feature, layer) ->
       if feature.properties && feature.properties.popupContent
         layer.bindPopup feature.properties.popupContent
 
     getColorAtScalar = (n) ->
-      n = n * 240 / (data.max_value)
+      n = (n - min) * 240 / (max - min)
       "hsl(#{n}, 100%, 50%)"
 
-    $.each data.points, (i, e) =>
-      L.polygon(@polyForCoords(e)).addTo(@map)
+    $.each data.results, (i, e) =>
 
-      # geoJSONFeature = {
-      #   type: "Feature",
-      #   properties: {
-      #     name: "scale: #{scale(e.value)}, value: #{e.value}",
-      #     popupContent: "scale: #{scale(e.value)}<br>value: #{e.value}<br>color: #{getColorAtScalar(scale(e.value))}"
-      #   },
-      #   geometry: {
-      #     type: "Point"
-      #     coordinates: [e.longitude, e.latitude]
-      #   }
-      # }
+      options =
+        stroke: false
+        fillColor: getColorAtScalar(e.val)
+        opacity: 1
 
-      # geoJSONMarkerOptions = {
-      #   radius: 10
-      #   fillColor: getColorAtScalar(scale(e.value))
-      #   color: "black"
-      #   weight: 1
-      #   opacity: 1
-      #   fillOpacity: 0.8
-      # }
+      L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
+      L.circle([e.lat, e.lng], 100000, options).addTo(@layerGroup)
 
-      # pointToLayer = (feature, latLng) ->
-      #   L.circleMarker(latLng, geoJSONMarkerOptions)
+  fillLegend: (data) =>
+    min = data.headers.actual_range[0]
+    max = data.headers.actual_range[1]
 
-      # L.geoJson(geoJSONFeature, {
-      #   pointToLayer: pointToLayer
-      #   onEachFeature: onEachFeature
-      # }).addTo(@map)
+    scale = (value) ->
+      range = max - min
+      parseFloat(value - min) #/ range
+
+    getColorAtScalar = (n) ->
+      n = (n - min) * 240 / (max - min)
+      "hsl(#{n}, 100%, 50%)"
+
+    color = getColorAtScalar(min)
+    $(".colorswatch.min").css("background-color": color)
+    color = getColorAtScalar(max)
+    $(".colorswatch.max").css("background-color": color)
+
+    $(".min.value").text(min + " #{data.headers.units}")
+    $(".max.value").text(max + " #{data.headers.units}")
 
 window.Map = Map

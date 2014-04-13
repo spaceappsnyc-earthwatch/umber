@@ -1,4 +1,5 @@
-<div class="um-options-set col-xs-2 animated fadeInRightBig">  
+
+<div class="um-options-set col-xs-2 animated fadeInLeftBig">  
   
   <h1 class="page-title">UMBER</h1>
   <!-- <p class="lead">There's something going on umber here.</p> -->
@@ -7,11 +8,22 @@
   <div class="um-option">
     <p>Dataset:</p>
     <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
+  
+    <div class="legend">
+      <span class="colorswatch min"></span>
+      <span class="value min">-7.5 kg/m^2</span>
+      <span class="colorswatch max"></span>
+      <span class="value max">77.2000045776 kg/m^2</span>
+    </div>
+<!-- 
     <div class="um-legend">
       <p class="um-legend-unit">In Pascals</p>
       <div class="um-legend-unit-color"></div>
     </div>
+ -->  
+
   </div>
+  
   <div class="um-option">
     <p>Choose a year:</p>
     <%= select_tag :years, options_for_select(
