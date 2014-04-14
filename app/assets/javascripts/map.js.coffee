@@ -1,5 +1,5 @@
 class Map
-  baseUrl: "http://10.0.0.2"
+  baseUrl: "http://localhost"
   port: "5001"
 
   constructor: ->
@@ -81,7 +81,7 @@ class Map
       @fillLegend(data)
 
   drawMap: (data) ->
-    @map = L.map('map', zoomControl: false).setView(window.coordinates, 7)
+    @map = L.map('map', zoomControl: false).setView(window.coordinates, 5)
     new L.Control.Zoom({ position: 'topright' }).addTo(@map)
 
     L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -128,7 +128,7 @@ class Map
       options =
         stroke: false
         fillColor: getColorAtScalar(e.val)
-        opacity: 1
+        fillOpacity: .3
 
       L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
       L.circle([e.lat, e.lng], 150000, options).addTo(@layerGroup)
