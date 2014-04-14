@@ -29,8 +29,6 @@ class window.Map
       @marker.setLatLng(location.latlng)
       window.coordinates = [location.latlng.lat, location.latlng.lng]
 
-    @map.addControl(search)
-
   getTimes: =>
     @$times.empty()
     $("#times").addClass("fadeOutLeftBig").removeClass("fadeInLeftBig")

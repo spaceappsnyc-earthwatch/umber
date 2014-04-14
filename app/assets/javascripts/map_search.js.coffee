@@ -17,7 +17,7 @@ class window.MapSearch
 
       json
 
-    new L.Control.Search
+    @control = new L.Control.Search
       callData: googleGeocoding
       filterJSON: filterJSONCall
       markerLocation: false
@@ -26,3 +26,7 @@ class window.MapSearch
       autoCollapse: true
       minLength: 2
       zoom: 5
+
+    @map.addControl(@control)
+
+  on: (event, callback) -> @control.on event, callback
