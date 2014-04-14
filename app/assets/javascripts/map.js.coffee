@@ -1,9 +1,9 @@
-class Map
+class window.Map
   baseUrl: "http://10.0.0.2"
   port: "5001"
 
   constructor: ->
-    @drawMap()
+    @setupMap()
 
     @$dataset = $("[name='dataset_id[]']")
     @$years = $("[name='years[]']")
@@ -14,43 +14,22 @@ class Map
     @$times.on("change", @getPoints)
 
     @setDataSets()
-
-    geocoder = new google.maps.Geocoder()
-
-    googleGeocoding = (text, callResponse) -> geocoder.geocode({address: text}, callResponse)
-
-    filterJSONCall = (rawjson) =>
-      json = {}
-      disp = []
-
-      $.each rawjson, (i, raw) ->
-        key = raw.formatted_address
-        loc = L.latLng(raw.geometry.location.lat(), raw.geometry.location.lng())
-        json[key] = loc
-
-      json
-
-    @search = new L.Control.Search
-      callData: googleGeocoding
-      filterJSON: filterJSONCall
-      markerLocation: false
-      circleLocation: false
-      autoType: false
-      autoCollapse: true
-      minLength: 2
-      zoom: 5
-
-    @map.addControl(@search)
-
-    @search.on 'search_locationfound', (location, title) =>
-      @marker.setLatLng(location.latlng)
-      window.coordinates = [location.latlng.lat, location.latlng.lng]
+    @setupSearch()
 
   setDataSets: =>
     $.getJSON "#{@baseUrl}:#{@port}/datasets", (data) =>
       $.each data.datasets, (i, e) =>
         @$dataset.append($("<option/>").attr("value", e.slug).text(e.name))
         $("#options").addClass("animated fadeInLeftBig").removeClass("hide")
+
+  setupSearch: =>
+    search = new MapSearch(@map)
+
+    search.on 'search_locationfound', (location, title) =>
+      @marker.setLatLng(location.latlng)
+      window.coordinates = [location.latlng.lat, location.latlng.lng]
+
+    @map.addControl(search)
 
   getTimes: =>
     @$times.empty()
@@ -80,7 +59,7 @@ class Map
       @drawGeoJSON(data)
       @fillLegend(data)
 
-  drawMap: (data) ->
+  setupMap: ->
     @map = L.map('map', zoomControl: false).setView(window.coordinates, 7)
     new L.Control.Zoom({ position: 'topright' }).addTo(@map)
 
@@ -90,13 +69,11 @@ class Map
     ).addTo(@map)
 
     @marker = L.marker(window.coordinates).addTo(@map)
-    @layerGroup = L.layerGroup([]).addTo(@map)
+    @dataPoints = L.layerGroup([]).addTo(@map)
 
-  polyForCoords: (e) ->
-    latitude = parseFloat(e.lat)
-    longitude = parseFloat(e.lng)
-
-    padding = 1.25
+  squareCenteredAtCoords: (latitude, longitude, padding) ->
+    latitude = parseFloat(latitude)
+    longitude = parseFloat(longitude)
 
     [
       [latitude + padding, longitude + padding]
@@ -106,7 +83,7 @@ class Map
     ]
 
   drawGeoJSON: (data) =>
-    @layerGroup.clearLayers()
+    @dataPoints.clearLayers()
 
     min = data.headers.actual_range[0]
     max = data.headers.actual_range[1]
@@ -130,8 +107,8 @@ class Map
         fillColor: getColorAtScalar(e.val)
         opacity: 1
 
-      L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
-      L.circle([e.lat, e.lng], 150000, options).addTo(@layerGroup)
+      L.polygon(@squareCenteredAtCoords(e.lat, e.lng, 1.25), options).addTo(@dataPoints)
+      L.circle([e.lat, e.lng], 150000, options).addTo(@dataPoints)
 
   fillLegend: (data) =>
     min = data.headers.actual_range[0]
@@ -152,5 +129,3 @@ class Map
 
     $(".min.value").text(min + " #{data.headers.units}")
     $(".max.value").text(max + " #{data.headers.units}")
-
-window.Map = Map
