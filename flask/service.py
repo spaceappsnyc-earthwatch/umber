@@ -7,15 +7,24 @@ app = Flask(__name__)
 def find_nearest(array, value):
     idx = (np.abs(array-float(value))).argmin()
     return idx
-    
-def options (self):
-    return {'Allow' : 'PUT' }, 200, \
-    { 'Access-Control-Allow-Origin': '*', \
-      'Access-Control-Allow-Methods' : 'PUT,GET' }
-      
+
+def options(self):
+    return { 'Allow' : 'GET' }, 200, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET' }
+
 @app.route('/datasets')
 def show_datasets():
-    resp = Response('{"datasets":[{"slug":"air","name":"Surface Temperature"}, {"slug":"pr_wtr","name":"Precipital Water"}, {"slug":"pres","name":"Pressure"}, {"slug":"rhum","name":"Relative Humidity"}, {"slug":"slp","name":"Sea Level Pressure"}]}', status=200, mimetype='application/json')
+    resp = Response("""
+    {
+      "datasets": [
+        {"slug":"air","name":"Surface Temperature"},
+        {"slug":"pr_wtr","name":"Precipital Water"},
+        {"slug":"pres","name":"Pressure"},
+        {"slug":"rhum","name":"Relative Humidity"},
+        {"slug":"slp","name":"Sea Level Pressure"}
+      ]
+    }
+    """,
+    status=200, mimetype='application/json')
     resp.headers['Link'] = 'http://datago.com'
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
@@ -27,18 +36,18 @@ def show_data(year, slug):
     lng = request.args.get('lng')
     dltLat = request.args.get('delta_lat')
     dltLng = request.args.get('delta_lng')
-    nc = netCDF4.Dataset('../Data/'+slug+'.'+year+'.nc')
-    if(not time is None) and (len(time) > 0) and (not lat is None) and (len(lat) > 0) and (not lng is None) and (len(lng) > 0):
+    nc = netCDF4.Dataset('../../surface/'+slug+'.sig995.'+year+'.nc')
+    if (not time is None) and (len(time) > 0) and (not lat is None) and (len(lat) > 0) and (not lng is None) and (len(lng) > 0):
         if(dltLat is None) or (len(dltLat) == 0):
             dltLat = 3
         else:
             dltLat = int(dltLat)
-        
-        if(dltLng is None) or (len(dltLng) == 0):
+
+        if (dltLng is None) or (len(dltLng) == 0):
             dltLng = 4
         else:
             dltLng = int(dltLng)
-        
+
         lng = float(lng)+180
         lat = float(lat)
         times = nc.variables['time']
@@ -49,14 +58,14 @@ def show_data(year, slug):
         lngA = find_nearest(lngs[:],lng)
         var = nc.variables[slug][:]
         data = []
-        
+
         for i in range(0, (dltLat*2)):
             newI = i-dltLat;
             for n in range(0, (dltLng*2)):
                 newN = n-dltLng
                 newLat = latA + newI
                 newLng = lngA + newN
-                
+
                 if(newLat >= 0) and (newLat < len(lats)) and (newLng >= 0) and (newLng < len(lngs)):
                     data.append({"lat":str(np.asscalar(lats[latA+newI])), "lng":str(np.asscalar(lngs[lngA+newN]-180)), "val":str(np.asscalar(var[timeA][latA+newI][lngA+newN]))})
 
@@ -75,7 +84,7 @@ def show_data(year, slug):
             lngI = -1
             for lngV in latV[:]:
                 data.append({"lat":str(np.asscalar(lats[latI])), "lng":str(np.asscalar(lngs[lngI])), "val":str(np.asscalar(lngV))})
-        
+
         heads = nc.variables[slug]
         data = '{"headers":{"actual_range":["'+str(np.asscalar(heads.actual_range[0]))+'","'+str(np.asscalar(heads.actual_range[1]))+'"], "units":"'+heads.units+'", "add_offset":"'+str(np.asscalar(heads.add_offset))+'", "var_desc":"'+heads.var_desc+'", "dataset":"'+heads.dataset+'"}, "results":'+json.dumps(data)+'}'
     else:
@@ -84,7 +93,7 @@ def show_data(year, slug):
         for i in times:
             data.append({"time":str(np.asscalar(i)), "time_as_string":str(netCDF4.num2date(i, nc.variables['time'].units))})
         data = '{"times":'+json.dumps(data)+'}'
-    
+
     resp = Response(data, status=200, mimetype='application/json')
     resp.headers['Link'] = 'http://datago.com'
     resp.headers['Access-Control-Allow-Origin'] = '*'

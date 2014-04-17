@@ -3,6 +3,8 @@
 #= require_tree .
 #= require leaflet
 #= require leaflet-search
+#= require bootstrap
+#= require bootstrap/tooltip
 
 $ ->
   $(document).ajaxStart -> $("#circleG").show()

@@ -40,8 +40,6 @@ html, body, #map
   border: 1px solid $brand-primary
   box-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15)
 
-
-  
   select
     width: 100%
 
@@ -52,14 +50,18 @@ html, body, #map
 
 .legend
   margin-top: 10px
-  width: 400px
-  height: 30px
 
   .colorswatch
     width: 20px
     height: 15px
     display: inline-block
     background-color: #bbb
+
+    &.min
+      background-color: hsl(240, 100%, 50%)
+
+    &.max
+      background-color: hsl(0, 100%, 50%)
 
 select[multiple]
   height: 100px !important

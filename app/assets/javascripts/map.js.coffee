@@ -21,7 +21,6 @@ class Map
 
     filterJSONCall = (rawjson) =>
       json = {}
-      disp = []
 
       $.each rawjson, (i, raw) ->
         key = raw.formatted_address
@@ -110,47 +109,50 @@ class Map
 
     min = data.headers.actual_range[0]
     max = data.headers.actual_range[1]
+    units = data.headers.units
 
-    scale = (value) ->
-      range = max - min
-      parseFloat(value - min) #/ range
+    colorScale = @scale(1, 12, min, max)
 
-    onEachFeature = (feature, layer) ->
-      if feature.properties && feature.properties.popupContent
-        layer.bindPopup feature.properties.popupContent
+    $.each [1..12], (e, i) ->
+      $(".colorswatch.step-#{i}").attr("title", "#{colorScale(i).toFixed(2)} #{units}")
 
-    getColorAtScalar = (n) ->
-      n = (n - min) * 240 / (max - min)
-      "hsl(#{n}, 100%, 50%)"
+    $(".colorswatch").tooltip()
 
     $.each data.results, (i, e) =>
-
       options =
         stroke: false
-        fillColor: getColorAtScalar(e.val)
+        fillColor: @getColorAtScalar(e.val, min, max)
         fillOpacity: .3
 
       L.polygon(@polyForCoords(e), options).addTo(@layerGroup)
-      L.circle([e.lat, e.lng], 150000, options).addTo(@layerGroup)
+      circle = L.circle([e.lat, e.lng], 150000, options)
+      circle.bindPopup("#{parseFloat(e.val).toFixed(2)} #{units}")
+      circle.addTo(@layerGroup)
 
   fillLegend: (data) =>
     min = data.headers.actual_range[0]
     max = data.headers.actual_range[1]
     range = max - min
 
-    scale = (value) ->
-      parseFloat(value - min) #/ range
+    $(".min.value").text(parseFloat(min).toFixed(2) + " #{data.headers.units}")
+    $(".max.value").text(parseFloat(max).toFixed(2) + " #{data.headers.units}")
 
-    getColorAtScalar = (n) ->
-      n = (n - min) * 240 / (max - min)
-      "hsl(#{n}, 100%, 50%)"
+  getColorAtScalar: (n, min, max) ->
+    scale = @scale(min, max, 240, 0)
+    "hsl(#{parseInt(scale(n))}, 100%, 50%)"
 
-    color = getColorAtScalar(min)
-    $(".colorswatch.min").css("background-color": color)
-    color = getColorAtScalar(max)
-    $(".colorswatch.max").css("background-color": color)
+  scale: (inMin, inMax, outMin, outMax) ->
+    inMax = parseFloat(inMax)
+    inMin = parseFloat(inMin)
+    outMin = parseFloat(outMin)
+    outMax = parseFloat(outMax)
 
-    $(".min.value").text(min + " #{data.headers.units}")
-    $(".max.value").text(max + " #{data.headers.units}")
+    inRange = inMax - inMin
+    outRange = outMax - outMin
+
+    inMultiplier = 1 / inRange
+    outMultiplier = 1 / outRange
+
+    (x) -> (x - inMin) * inMultiplier / outMultiplier + outMin
 
 window.Map = Map

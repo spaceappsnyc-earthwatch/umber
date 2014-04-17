@@ -1,4 +1,4 @@
-<div id="options" class="um-options-set col-xs-2 hide">
+<div id="options" class="um-options-set col-xs-2">
   <%= image_tag('umberlogo.png', class: 'logo') %>
   <!-- <p class="lead">There's something going on umber here.</p> -->
 
@@ -7,13 +7,22 @@
     <%= select_tag :dataset_id, options_for_select([]), multiple: true %>
 
     <div class="legend">
-      <span class="colorswatch min"></span>
-      <span class="value min"></span>
-
+      <span class="colorswatch min step-1"></span>
+      <span class="value min">Min</span>
       <br/>
 
-      <span class="colorswatch max"></span>
-      <span class="value max"></span>
+      <% max  = 10 %>
+      <% max.downto(1).each do |i| %>
+        <% hsl = "hsl(#{i.to_f / max * 240}, 100%, 50%)" %>
+        <span class="colorswatch step-<%= 12 - i %>" style="background-color: <%= hsl %>"></span>
+        <% if i == 6 %>
+          <br/>
+        <% end %>
+      <% end %>
+      <br/>
+
+      <span class="colorswatch step-12 max"></span>
+      <span class="value max">Max</span>
     </div>
 
 <!--
